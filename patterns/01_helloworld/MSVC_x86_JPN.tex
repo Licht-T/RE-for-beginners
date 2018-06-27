@@ -1,12 +1,12 @@
 \subsubsection{MSVC}
 
-MSVC 2010でコンパイルしてみましょう。
+MSVC 2010でコンパイルしてみる。
 
 \begin{lstlisting}
 cl 1.cpp /Fa1.asm
 \end{lstlisting}
 
-(\TT{/Fa} オプションは、アセンブリリストファイルを生成するようにコンパイラに指示します)
+(\TT{/Fa} オプションは、アセンブリリストファイルを生成するようにコンパイラに指示する)
 
 \begin{lstlisting}[caption=MSVC 2010,style=customasmx86]
 CONST	SEGMENT
@@ -29,37 +29,38 @@ _main	ENDP
 _TEXT	ENDS
 \end{lstlisting}
 
-MSVCは、Intel構文でアセンブリリストを生成します。 Intel構文とAT\&T構文の違いについては、\myref{ATT_syntax}で説明します。
+MSVCは、Intel構文でアセンブリリストを生成します。 Intel構文とAT\&T構文の違いについては、\myref{ATT_syntax}で説明する。
 
-コンパイラは、\TT{1.exe}にリンクされる\TT{1.obj}というファイルを生成しました。 
-私たちの場合、ファイルには\TT{CONST}（データ定数用）と\TT{\_TEXT}（コード用）の2つのセグメントが含まれています。
+コンパイラは、\TT{1.exe}にリンクされる\TT{1.obj}というファイルを生成する。
+このファイルには\TT{CONST}（データ定数用）と\TT{\_TEXT}（コード用）の2つのセグメントが含まれている。
 
 \myindex{\CLanguageElements!const}
 \label{string_is_const_char}
-C/C++の文字列\TT{hello, world}には、\TT{const char[]}\InSqBrackets{\TCPPPL p176, 7.3.2}型がありますが、独自の名前はありません。
-コンパイラは何らかの形で文字列を処理する必要があるため、内部名\TT{\$SG3830}を定義します。
+C/C++の文字列\TT{hello, world}には、\TT{const char[]}\InSqBrackets{\TCPPPL p176, 7.3.2}型を持ちますが、文字列そのものに独自の名前はありません。
+コンパイラは何らかの形で文字列を処理する必要があるため、文字列に対して内部名\TT{\$SG3830}を定義する。
 
-そのため、この例は次のように書き換えられます。
+そのため、この例は次のように書き換えられる。
 
 \lstinputlisting[style=customc]{patterns/01_helloworld/hw_2.c}
 
-アセンブリリストに戻りましょう。わかるように、文字列は \CCpp 文字列の標準であるNULLバイトで終了します。 \CCpp 文字列の詳細は： \myref{C_strings}
+アセンブリリストに戻って確認すると、文字列は \CCpp 文字列の標準であるNULL文字で終端されている。 \CCpp 文字列の詳細は： \myref{C_strings} を参照のこと．
 
-\TT{\_TEXT}というコードセグメントでは、\main{} 関数が1つしかありません。関数 \main は、プロローグコードで始まり、エピローグコードで終わります（ほぼすべての関数のように）
-\footnote{プロローグとエピローグ関数についてのセクションでは、詳細を見ていきます~(\myref{sec:prologepilog})}
+\TT{\_TEXT}というコードセグメントには、 \main{} という1つの関数だけが存在する。\main 関数は、プロローグコードで始まり、エピローグコードで終了する（これは，\main 関数以外のほぼすべての関数に当てはまる）．
+\footnote{詳細は『関数のプロローグとエピローグ』についてのセクションを参照 ~(\myref{sec:prologepilog})}
 
-関数のプロローグの後に、\printf{} 関数の呼び出しがあります。
+\myindex{x86!\Instructions!CALL}
+関数のプロローグの後、\printf{} 関数が呼び出される。
 \INS{CALL \_printf}.
 \myindex{x86!\Instructions!PUSH}
-呼び出しの前に、\PUSH 命令の助けを借りて、挨拶を含む文字列アドレス（またはそのポインタ）がスタックに置かれます。
+呼び出しの前に、\PUSH 命令によって \TT{hello, world} 文字列のアドレス（またはその文字列へのポインタ）がスタックに置かれる。
 
-\printf 関数が \main 関数に制御を返すと、文字列アドレス（またはそのポインタ）はまだスタック上にあります。もはや必要がないので、スタックポインタ（ESPレジスタ）を修正する必要があります。
+\printf 関数から \main 関数へ制御が返されたとき、文字列アドレス（またはそのポインタ）はまだスタック上にある。これはもはや不必要なので、スタックポインタ（ \ESP レジスタ）を修正しなければいけない。
 
 \myindex{x86!\Instructions!ADD}
 \INS{ADD ESP, 4}は \ESP レジスタ値に4を加算することを意味します。
 
-なぜ4？これは32ビットプログラムなので、スタックを通過するアドレスには正確に4バイトが必要です。 x64コードの場合は8バイト必要です。
-\INS{ADD ESP, 4} は \INS{POP register} と事実上同等ですが、レジスタを使用しません\footnote{CPU flags, however, are modified}
+なぜ4なのでしょうか？これは32ビットプログラムなので、スタックポインタに4バイト（x64コードの場合は8バイト）加算することで，文字列へのアドレスのサイズ分だけスタックポインタを移動させたことを意味する。
+\INS{ADD ESP, 4} は \INS{POP register} と事実上同等だが、レジスタを使用しない\footnote{しかしながら，CPUフラグレジスタは変更されます}．
 
 \myindex{Intel C++}
 \myindex{\oracle}
