@@ -29,17 +29,17 @@ _main	ENDP
 _TEXT	ENDS
 \end{lstlisting}
 
-MSVCは、Intel構文でアセンブリリストを生成します。 Intel構文とAT\&T構文の違いについては、\myref{ATT_syntax}で説明する。
+MSVCは、Intel構文でアセンブリリストを生成します。 Intel構文とAT\&T構文の違いについては、\myref{ATT_syntax}において説明している。
 
 コンパイラは、\TT{1.exe}にリンクされる\TT{1.obj}というファイルを生成する。
 このファイルには\TT{CONST}（データ定数用）と\TT{\_TEXT}（コード用）の2つのセグメントが含まれている。
 
 \myindex{\CLanguageElements!const}
 \label{string_is_const_char}
-C/C++の文字列\TT{hello, world}には、\TT{const char[]}\InSqBrackets{\TCPPPL p176, 7.3.2}型を持ちますが、文字列そのものに独自の名前はありません。
-コンパイラは何らかの形で文字列を処理する必要があるため、文字列に対して内部名\TT{\$SG3830}を定義する。
+C/C++の文字列\TT{hello, world}は、\TT{const char[]}\InSqBrackets{\TCPPPL p176, 7.3.2}型を持つが、文字列そのものに独自の名前はありません。
+コンパイラは何らかの形で文字列を処理する必要があるため、文字列に対して内部名\TT{\$SG3830}を定義している。
 
-そのため、この例は次のように書き換えられる。
+そのため、この例は次のように書き換えることもできる。
 
 \lstinputlisting[style=customc]{patterns/01_helloworld/hw_2.c}
 
@@ -59,17 +59,17 @@ C/C++の文字列\TT{hello, world}には、\TT{const char[]}\InSqBrackets{\TCPPP
 \myindex{x86!\Instructions!ADD}
 \INS{ADD ESP, 4}は \ESP レジスタ値に4を加算することを意味します。
 
-なぜ4なのでしょうか？これは32ビットプログラムなので、スタックポインタに4バイト（x64コードの場合は8バイト）加算することで，文字列へのアドレスのサイズ分だけスタックポインタを移動させたことを意味する。
-\INS{ADD ESP, 4} は \INS{POP register} と事実上同等だが、レジスタを使用しない\footnote{しかしながら，CPUフラグレジスタは変更されます}．
+なぜ4なのでしょう？これは32ビットプログラムなので、スタックポインタに4バイト（x64コードの場合は8バイト）加算することで，文字列へのアドレスのサイズ分だけスタックポインタを移動させたことを意味している。
+\INS{ADD ESP, 4} は \INS{POP register} とほぼ同等だが、 \INS{POP register} と異なりレジスタを使用しない命令となっている\footnote{しかしながら，CPUフラグレジスタは変更される．}．
 
 \myindex{Intel C++}
 \myindex{\oracle}
 \myindex{x86!\Instructions!POP}
 
-同じ目的のために、インテルC++コンパイラのようなコンパイラの中には、\ADD の代わりに\TT{POP ECX}を発行するものもある
-（例えば、インテルC++コンパイラでコンパイルされているので、このようなパターンは \oracle{} コードで見ることができる）。この命令はほとんど同じ効果を持ちますが、\ECX レジスタの内容は上書きされます。インテルC++コンパイラは、この命令命令コードが\TT{ADD ESP, x}（\TT{POP}の場合は1バイト、\TT{ADD}の場合は3バイト）よりも短いため、\TT{POP ECX}を使用すると思われます。
+インテルC++コンパイラなどでは、同様の目的のために\ADD の代わりに\TT{POP ECX}を発行するものもある
+（例えば、\oracle{} のコードで見ることができる）。この命令は \ADD とほぼ同じ効果を持つが、\ECX レジスタの内容は上書きされる。インテルC++コンパイラは、この命令コードが\TT{ADD ESP, x}（\TT{POP}の場合は1バイト、\TT{ADD}の場合は3バイト）よりも短いために、\TT{POP ECX}を使用するようである。
 
-\oracle{} から \ADD の代わりに \POP を使用する例を次に示します。
+\oracle{} のコードにおいて \ADD の代わりに \POP を使用する例を次に示す。
 
 \begin{lstlisting}[caption=\oracle 10.2 Linux (app.o file),style=customasmx86]
 .text:0800029A                 push    ebx
@@ -80,17 +80,17 @@ C/C++の文字列\TT{hello, world}には、\TT{const char[]}\InSqBrackets{\TCPPP
 %Read more about the stack in section
 % ~(\myref{sec:stack}).
 \myindex{\CLanguageElements!return}
-\printf を呼び出した後、元の \CCpp コードには、\main 関数の結果として\TT{return 0}というステートメントが含まれています。
+\printf 関数を呼び出した後、元の \CCpp コードには、\main 関数の返り値として\TT{return 0}というステートメントが含まれています。
 
 \myindex{x86!\Instructions!XOR}
-生成されたコードでは、これは命令\INS{XOR EAX, EAX}によって実装されます。
+このコードでは，\INS{XOR EAX, EAX}命令によって実装されている。
 
 \myindex{x86!\Instructions!MOV}
 
-\XOR は実際には\q{eXclusive OR}\footnote{\href{http://go.yurichev.com/17118}{Wikipedia}}ですが、コンパイラでは\INS{MOV EAX, 0}の代わりに使用されることがよくあります。 もう少し短いオペコード（ \MOV の場合は5に対して \XOR の場合は2バイト）であるからです。
+\XOR は \q{eXclusive OR}\footnote{\href{http://go.yurichev.com/17118}{Wikipedia}} だが、\INS{MOV EAX, 0} の代用として使用されることもある。 \MOV よりも若干短い命令コード（ \MOV の場合は5に対して \XOR の場合は2バイト）であるためでだ。
 
 \myindex{x86!\Instructions!SUB}
-一部のコンパイラは\INS{SUB EAX, EAX}を出力します。これは、 \EAX の値を \EAX \IT{の値から} \IT{差し引くこと}を意味します。それはどんな場合でもゼロになります。
+一部のコンパイラは\INS{SUB EAX, EAX}を出力する。これは、 \EAX の値を \EAX \IT{の値から} \IT{差し引くこと（SUBtract）}を意味する。つまり，\EAX の値はゼロとなります。
 
 \myindex{x86!\Instructions!RET}
-最後の命令RETは、\gls{caller}に制御を返します。 通常、これは \CCpp \ac{CRT}コードであり、これは\ac{OS}に制御を戻します。
+最後に書かれたの命令 \RET は、\gls{caller}に制御を返す。 通常、これは \CCpp \ac{CRT}コードであり、これは\ac{OS}に制御を戻すことを意味する。
